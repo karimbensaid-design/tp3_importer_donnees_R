@@ -1,0 +1,134 @@
+---
+title: "TP3 : Importation et Analyse avrc R"
+subtitle: "Application en Microbiologie (Croissance d'E. coli)"
+institute: "Univ. Bejaia- Fac:SNV. Dep.Microbiologie"
+author: "Bensaid"
+format:
+  live-html:
+    theme: cosmo
+    toc: true
+    toc-title: "Étapes du TP"
+    toc-depth: 2
+    fontsize: 1.05em
+    linestretch: 1.5
+    code-copy: true
+engine: knitr
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+::: {.callout-tip appearance="simple"}
+**Consigne :** Ce TP est noté sur **20 points**. Lisez ce guide sur votre **smartphone** et réalisez toutes les manipulations sur votre **PC** avec **R base uniquement** (aucun package externe à installer).
+:::
+
+---
+
+## Étape 1 : Générer vos données personnelles
+
+Remplacez `1` par le **numéro de votre poste PC (de 1 à 20)** ci-dessous et cliquez sur **Run Code** pour obtenir votre tableau unique.
+
+```{webr}
+#| caption: "Générateur de données par poste"
+# Indiquez votre numéro de poste PC (entre 1 et 20) :
+numero_poste <- 1
+
+set.seed(numero_poste)
+tableau_tp <- data.frame(
+  Echantillon = c("Souche_A1", "Souche_A2", "Souche_A3", "Souche_B1", "Souche_B2", "Souche_B3"),
+  Temps_h = c(0, 2, 4, 0, 2, 4),
+  DO_600 = round(c(0.05, 0.18, 0.62, 0.04, 0.25, 0.89) * runif(6, 0.85, 1.15), 2),
+  UFC_mL = round(c(12000, 85000, 410000, 10500, 130000, 790000) * runif(6, 0.85, 1.15), -2)
+)
+print(tableau_tp)
+```
+
+Ouvrez **Microsoft Excel** (ou LibreOffice Calc) sur votre PC et saisissez **exactement ces 6 lignes** dans la Feuille 1.
+
+---
+
+## Étape 2 : Importer dans R Base (3 méthodes natives)
+
+Choisissez **une** des trois méthodes ci-dessous pour importer vos données dans un objet nommé `donnees` :
+
+### Méthode 1 : Format CSV (Recommandée)
+1. Dans Excel : **Fichier** → **Enregistrer sous** → **CSV (séparateur : point-virgule) (*.csv)** (`croissance_ecoli.csv`).
+2. Dans R :
+```r
+donnees <- read.csv2("croissance_ecoli.csv")
+```
+# Astuce si R ne trouve pas le fichier (ouvre une fenêtre de sélection) :
+```r
+donnees <- read.csv2(file.choose())
+```
+
+### Méthode 2 : Presse-papiers (Copier-Coller Windows)
+1. Dans Excel, sélectionnez tout votre tableau (titres compris) et appuyez sur **Ctrl + C**.
+2. Dans R :
+```r
+donnees <- read.delim("clipboard", dec = ",")
+```
+
+### Méthode 3 : Fichier Texte tabulé (`.txt`)
+1. Dans Excel : **Fichier** → **Enregistrer sous** → **Texte (séparateur : tabulation) (*.txt)** (`croissance_ecoli.txt`).
+2. Dans R :
+```r
+donnees <- read.table("croissance_ecoli.txt", header = TRUE, sep = "\t", dec = ",")
+# Astuce si R ne trouve pas le fichier (ouvre une fenêtre de sélection) :
+donnees <- read.table(file.choose(), header = TRUE, sep = "\t", dec = ",")
+
+```
+
+---
+
+## Étape 3 : Affichage et Questions notées (/20)
+
+Exécutez d'abord les commandes d'affichage pour vérifier que vos données sont bien importées (6 lignes, 4 colonnes, variables numériques en `num` ou `int`) :
+
+```r
+View(donnees)
+str(donnees)
+```
+
+Répondez ensuite aux **4 questions suivantes** (5 points par question) en utilisant uniquement les fonctions **R base** (`mean()`, `max()`, `sd()`, `log10()`) :
+
+* **Question 2 (5 pts) :** Quelle est la **moyenne** de la densité optique (`DO_600`) ?
+* **Question 3 (5 pts) :** Quelle est la concentration **maximale** observée en `UFC_mL` ?
+* **Question 4 (5 pts) :** Quelle est l'**écart-type** (`sd()`) de la densité optique (`DO_600`) ?
+* **Question 5 (5 pts) :** 
+  + Créez une nouvelle colonne en tapant le code: 
+`donnees$log_UFC <- log10(donnees$UFC_mL)` 
+  + afficher le tableau avec le code: `donnees`
+
+ Quelle est la **moyenne** de cette colonne `log_UFC` ?
+
+---
+
+## Étape 4 : Erreurs fréquentes en R Base
+
+| Erreur / Symptôme | Cause | Solution |
+|:---|:---|:---|
+| `cannot open file ... No such file` | Mauvais dossier de travail. | Utilisez `read.csv2(file.choose())`. |
+| `argument is not numeric : returning NA` | Virgule `,` lue comme du texte. | Utilisez `read.csv2()` ou ajoutez `dec = ","`. |
+| Une seule colonne `Echantillon.Temps_h...` | Mauvais séparateur de colonnes. | Utilisez `read.csv2()` au lieu de `read.csv()`. |
+
+---
+
+## Étape 5 : Envoi du compte rendu
+
+Une fois vos 4 résultats calculés sur votre PC, cliquez sur le bouton ci-dessous depuis votre smartphone pour ouvrir le formulaire de rendu et soumettre votre travail 
+:
+**Recopier les résultats du TP sur la feuille de réponses fournie**
+
+:::{.callout-important appearance="default"}
+**Recopier les résultats du TP sur la feuille de réponses fournie**
+
+**bien renseigner la feuille de réponse**
+:::
+
+::: {.d-grid .gap-2 .my-4}
+[Ouvrir le formulaire de compte rendu (Google Form)](https://docs.google.com/forms/d/e/1FAIpQLSfW6i5x2ldwnUk2cXsyXXRHo8SvVfKg3JqKYR1mwlcEhajSSg/viewform?usp=publish-editor){.btn .btn-primary .btn-lg target="_blank"}
+:::
+
+::: {.callout-warning appearance="simple"}
+**Vérification avant envoi :** Assurez-vous d'avoir bien indiqué les **noms et prénoms des deux membres du binôme** ainsi que le **numéro exact de votre poste PC (1 à 20)**.
+:::
